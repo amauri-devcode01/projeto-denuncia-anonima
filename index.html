@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYPD Bureau de Investigações Anônimas - 1900</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Vintage Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Courier Prime, Cinzel & Special Elite -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <script src="js/tailwhip.js"></script>
+    <script src="js/script.js"></script>
+
+   
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-brass selection:text-noir-900">
+
+    <div class="vignette-overlay no-print"></div>
+
+    <header class="border-b border-brass/30 bg-noir-800/90 backdrop-blur sticky top-0 z-30 px-4 py-3 no-print">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            
+            <!-- Logo / NYPD Badge -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('submit')">
+                <div class="w-12 h-12 rounded-full border-2 border-brass bg-noir-900 flex items-center justify-center text-brass shadow-inner">
+                    <i class="fa-solid fa-shield-halved text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-heading font-bold text-lg md:text-xl text-brass tracking-wider uppercase leading-none">
+                        NYPD • 18th Precinct
+                    </h1>
+                    <p class="text-xs text-parchment-400 font-typewriter tracking-widest uppercase mt-1">
+                        Bureau de Denúncias Anônimas - Manhattan, NY (1900)
+                    </p>
+                </div>
+            </div>
+
+            <!-- Profile Nav Tabs -->
+            <nav class="flex items-center space-x-1 sm:space-x-2 bg-noir-900 p-1.5 rounded-lg border border-noir-500/50">
+                <button id="nav-audio" onclick="toggleNoirAudio()" class="px-3 py-1.5 text-xs sm:text-sm rounded font-heading uppercase transition-all flex items-center gap-2 text-parchment-300 hover:text-brass border border-transparent" title="Ligar/Desligar Atmosfera Noir">
+                    <i id="audio-icon" class="fa-solid fa-record-vinyl"></i> <span class="hidden md:inline">Vitrola</span>
+                </button>
+                <div class="w-px h-6 bg-noir-600 mx-1"></div>
+                
+                <button id="nav-submit" onclick="switchTab('submit')" class="px-3 py-1.5 text-xs sm:text-sm rounded font-heading uppercase transition-all flex items-center gap-2 text-brass bg-noir-700 border border-brass/40">
+                    <i class="fa-solid fa-feather-pointed"></i> Nova Denúncia
+                </button>
+                <button id="nav-track" onclick="switchTab('track')" class="px-3 py-1.5 text-xs sm:text-sm rounded font-heading uppercase transition-all flex items-center gap-2 text-parchment-300 hover:text-brass">
+                    <i class="fa-solid fa-magnifying-glass"></i> Consultar Ficha
+                </button>
+                <button id="nav-admin" onclick="switchTab('admin')" class="px-3 py-1.5 text-xs sm:text-sm rounded font-heading uppercase transition-all flex items-center gap-2 text-parchment-300 hover:text-brass">
+                    <i class="fa-solid fa-user-shield"></i> Gabinete Policial
+                </button>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full z-10">
+
+        <!-- ========================================================================= -->
+        <!-- VIEW 1: SUBMIT ANONYMOUS REPORT (DENUNCIANTE) -->
+        <!-- ========================================================================= -->
+        <section id="view-submit" class="space-y-6 max-w-4xl mx-auto">
+            
+            <div class="parchment-card p-6 rounded-lg text-center border-l-4 border-l-brass">
+                <div class="inline-block p-2 rounded-full bg-brass/10 text-brass mb-2">
+                    <i class="fa-solid fa-user-secret text-3xl"></i>
+                </div>
+                <h2 class="font-heading text-2xl text-brass font-bold uppercase tracking-wide">
+                    Sua Identidade Permanece em Segredo Absoluto
+                </h2>
+                <p class="text-sm text-parchment-200 mt-2 max-w-2xl mx-auto leading-relaxed">
+                    "Nas sombras de Nova York, o silêncio protege o crime. Deixe aqui suas informações sem revelar seu nome. Nenhum registro de quem enviou esta mensagem será mantido nos arquivos deste departamento."
+                </p>
+            </div>
+
+            <!-- Form Card -->
+            <form id="reportForm" onsubmit="handleReportSubmit(event)" class="parchment-card p-6 sm:p-8 rounded-lg space-y-6">
+                
+                <div class="border-b border-noir-500 pb-3 flex justify-between items-center">
+                    <h3 class="font-heading text-lg text-brass uppercase font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-file-pen"></i> Registro de Ocorrência Relevante
+                    </h3>
+                    <span class="text-xs text-parchment-400 font-mono">FORMULÁRIO #104-B</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs uppercase font-heading text-parchment-300 mb-2">
+                            Categoria do Delito <span class="text-crimson">*</span>
+                        </label>
+                        <select id="crimeCategory" required class="w-full p-3 rounded vintage-input text-sm">
+                            <option value="" disabled selected>Selecione a natureza da infração...</option>
+                            <option value="Contrabando & Jogo Ilegal">Contrabando & Jogo Ilegal (Speakeasies/Docks)</option>
+                            <option value="Corrupção & Propina">Corrupção Urbana & Propina Policial</option>
+                            <option value="Extorsão & Ameaças">Extorsão & Proteção Clandestina</option>
+                            <option value="Roubo & Furtos">Roubo de Cargas & Furtos Maior</option>
+                            <option value="Violência Urbana">Violência Doméstica / Agressão Urbana</option>
+                            <option value="Outros Crimes">Outra Ação Clandestina</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs uppercase font-heading text-parchment-300 mb-2">
+                            Distrito de Nova York <span class="text-crimson">*</span>
+                        </label>
+                        <select id="crimeDistrict" required class="w-full p-3 rounded vintage-input text-sm">
+                            <option value="" disabled selected>Selecione a região/distrito...</option>
+                            <option value="Five Points">Five Points (Manhattan)</option>
+                            <option value="Bowery Street">Bowery Street & Saloons</option>
+                            <option value="Lower East Side">Lower East Side</option>
+                            <option value="Docks do East River">Docks do East River (Porto)</option>
+                            <option value="Wall Street & Financial">Wall Street & Distrito Financeiro</option>
+                            <option value="Brooklyn Waterfront">Brooklyn Waterfront</option>
+                            <option value="Harlem Quarter">Harlem Quarter</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs uppercase font-heading text-parchment-300 mb-2">
+                            Data e Hora Aproximada <span class="text-crimson">*</span>
+                        </label>
+                        <input type="datetime-local" id="crimeDate" required class="w-full p-3 rounded vintage-input text-sm">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs uppercase font-heading text-parchment-300 mb-2">
+                            Nível de Gravidade <span class="text-crimson">*</span>
+                        </label>
+                        <select id="crimeUrgency" required class="w-full p-3 rounded vintage-input text-sm">
+                            <option value="Baixa">Baixa (Atividade de pouca ameaça imediata)</option>
+                            <option value="Média" selected>Média (Atividade ilícita recorrente)</option>
+                            <option value="Alta">Alta (Risco à integridade ou roubo elevado)</option>
+                            <option value="Crítica">Crítica (Ameaça imediata à vida / Socorro)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase font-heading text-parchment-300 mb-2">
+                        Ponto de Referência ou Endereço Exato
+                    </label>
+                    <input type="text" id="crimeAddress" placeholder="Ex: Galpão atrás da Taverna O'Leary, número 142..." class="w-full p-3 rounded vintage-input text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase font-heading text-parchment-300 mb-2">
+                        Descrição Pormenorizada do Ocorrido <span class="text-crimson">*</span>
+                    </label>
+                    <textarea id="crimeDescription" rows="5" required placeholder="Descreva os suspeitos, vestimentas, horários de movimentação, veículos ou charretes utilizadas e detalhes do ato..." class="w-full p-3 rounded vintage-input text-sm resize-y"></textarea>
+                </div>
+
+                <div class="border border-dashed border-noir-500 p-4 rounded bg-noir-900/50">
+                    <label class="block text-xs uppercase font-heading text-brass mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-paperclip"></i> Anexar Evidências (Fotografias, Documentos, Cartas)
+                    </label>
+                    <p class="text-xs text-parchment-400 mb-3">Simule o envio de uma evidência visual relacionada ao caso.</p>
+                    <input type="file" id="crimeEvidence" accept="image/*" class="block w-full text-xs text-parchment-300 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-heading file:bg-noir-600 file:text-brass hover:file:bg-noir-500 cursor-pointer">
+                </div>
+
+                <div class="pt-4 flex justify-end">
+                    <button type="submit" class="btn-brass px-8 py-3 rounded text-sm font-bold uppercase tracking-widest flex items-center gap-3">
+                        <i class="fa-solid fa-stamp"></i> Registrar Denúncia no Prontuário
+                    </button>
+                </div>
+
+            </form>
+        </section>
+
+
+        <!-- ========================================================================= -->
+        <!-- VIEW 2: TRACK REPORT STATUS BY PROTOCOL -->
+        <!-- ========================================================================= -->
+        <section id="view-track" class="space-y-6 max-w-4xl mx-auto hidden">
+            
+            <div class="parchment-card p-6 sm:p-8 rounded-lg space-y-6">
+                <div class="border-b border-noir-500 pb-3">
+                    <h2 class="font-heading text-2xl text-brass font-bold uppercase flex items-center gap-3">
+                        <i class="fa-solid fa-box-archive"></i> Consulta de Dossier em Andamento
+                    </h2>
+                    <p class="text-xs text-parchment-400 mt-1">Informe o código de protocolo gerado no momento da denúncia para verificar o progresso das investigações policiais.</p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <div class="relative flex-grow">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-parchment-400">
+                            <i class="fa-solid fa-key"></i>
+                        </span>
+                        <input type="text" id="trackProtocolInput" placeholder="Ex: NYPD-1900-8492" class="w-full pl-10 pr-3 py-3 rounded vintage-input font-mono uppercase tracking-widest text-sm">
+                    </div>
+                    <button onclick="searchProtocol()" class="btn-brass px-6 py-3 rounded text-sm font-bold uppercase flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-magnifying-glass"></i> Investigar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Result Card -->
+            <div id="trackResultContainer" class="hidden"></div>
+
+        </section>
+
+
+        <!-- ========================================================================= -->
+        <!-- VIEW 3: ADMIN LOGIN & DASHBOARD (GABINETE POLICIAL) -->
+        <!-- ========================================================================= -->
+        <section id="view-admin" class="space-y-6">
+
+            <!-- Subview 3A: Admin Login Form -->
+            <div id="admin-login-box" class="max-w-md mx-auto parchment-card p-6 sm:p-8 rounded-lg space-y-6 text-center">
+                <div class="w-16 h-16 rounded-full border-2 border-brass bg-noir-900 mx-auto flex items-center justify-center text-brass shadow-lg">
+                    <i class="fa-solid fa-lock text-2xl"></i>
+                </div>
+                <div>
+                    <h2 class="font-heading text-xl text-brass font-bold uppercase">Acesso Restrito ao Comissário</h2>
+                    <p class="text-xs text-parchment-400 mt-1">Insira seu código de autenticação da delegacia para acessar os dossiês confidenciais.</p>
+                </div>
+
+                <form onsubmit="handleAdminLogin(event)" class="space-y-4 text-left">
+                    <div>
+                        <label class="block text-xs uppercase font-heading text-parchment-300 mb-1">Código de Acesso Policial</label>
+                        <input type="password" id="adminPassword" placeholder="Senha de demonstração: 1900" required class="w-full p-3 rounded vintage-input text-center text-lg tracking-widest font-mono">
+                    </div>
+                    <button type="submit" class="w-full btn-brass py-3 rounded text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-building-shield"></i> Entrar na Central de Dossiês
+                    </button>
+                </form>
+            </div>
+
+            <!-- Subview 3B: Admin Dashboard & Management Pages -->
+            <div id="admin-dashboard" class="hidden space-y-6">
+                
+                <!-- Welcome Bar & Logout -->
+                <div class="parchment-card p-4 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-4 border-l-4 border-l-brass">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded bg-brass/20 text-brass flex items-center justify-center">
+                            <i class="fa-solid fa-user-gear text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-heading text-brass font-bold uppercase text-base">Gabinete de Investigações • Inspector Chief</h3>
+                            <p class="text-xs text-parchment-400">Sessão Autenticada - Registros Policiais da Cidade de Nova York (1900)</p>
+                        </div>
+                    </div>
+                    <button onclick="handleAdminLogout()" class="btn-danger px-4 py-2 rounded text-xs font-bold uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-right-from-bracket"></i> Encerrar Plantão
+                    </button>
+                </div>
+
+                <!-- Sub-Navegação do Gabinete Policial (PÁGINAS DO GABINETE) -->
+                <div class="flex border-b border-brass/30 bg-noir-900 rounded-t-lg overflow-x-auto">
+                    <button id="subnav-dash" onclick="switchAdminSubtab('dash')" class="px-5 py-3 text-xs font-heading uppercase tracking-wider border-b-2 border-brass text-brass bg-noir-800 flex items-center gap-2 whitespace-nowrap transition-all">
+                        <i class="fa-solid fa-chart-pie"></i> 1. Dashboard Analítico
+                    </button>
+                    <button id="subnav-reports" onclick="switchAdminSubtab('reports')" class="px-5 py-3 text-xs font-heading uppercase tracking-wider border-b-2 border-transparent text-parchment-400 hover:text-brass flex items-center gap-2 whitespace-nowrap transition-all">
+                        <i class="fa-solid fa-folder-closed"></i> 2. Gestão de Denúncias
+                    </button>
+                    <button id="subnav-admins" onclick="switchAdminSubtab('admins')" class="px-5 py-3 text-xs font-heading uppercase tracking-wider border-b-2 border-transparent text-parchment-400 hover:text-brass flex items-center gap-2 whitespace-nowrap transition-all">
+                        <i class="fa-solid fa-user-group"></i> 3. Administradores & Agentes
+                    </button>
+                </div>
+
+                <!-- ========================================================================= -->
+                <!-- PÁGINA 1 DO GABINETE: DASHBOARD ANALÍTICO -->
+                <!-- ========================================================================= -->
+                <div id="admin-subview-dash" class="space-y-6">
+                    <!-- Stats Overview Counters -->
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <div class="parchment-card p-4 rounded text-center">
+                            <span class="text-[10px] uppercase text-parchment-400 font-heading block">Denúncias Totais</span>
+                            <span id="stat-total" class="font-heading text-3xl font-bold text-brass">0</span>
+                        </div>
+                        <div class="parchment-card p-4 rounded text-center">
+                            <span class="text-[10px] uppercase text-parchment-400 font-heading block">Pendentes</span>
+                            <span id="stat-pending" class="font-heading text-3xl font-bold text-orange-500">0</span>
+                        </div>
+                        <div class="parchment-card p-4 rounded text-center">
+                            <span class="text-[10px] uppercase text-parchment-400 font-heading block">Em Investigação</span>
+                            <span id="stat-investigating" class="font-heading text-3xl font-bold text-blue-400">0</span>
+                        </div>
+                        <div class="parchment-card p-4 rounded text-center">
+                            <span class="text-[10px] uppercase text-parchment-400 font-heading block">Concluídas</span>
+                            <span id="stat-resolved" class="font-heading text-3xl font-bold text-emerald-500">0</span>
+                        </div>
+                        <div class="parchment-card p-4 rounded text-center col-span-2 md:col-span-1">
+                            <span class="text-[10px] uppercase text-parchment-400 font-heading block">Taxa Solução</span>
+                            <span id="stat-rate" class="font-heading text-3xl font-bold text-amber-300">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Distribuição por Gravidade -->
+                        <div class="parchment-card p-5 rounded-lg space-y-4">
+                            <h4 class="font-heading text-sm text-brass uppercase font-bold flex items-center gap-2 border-b border-noir-500 pb-2">
+                                <i class="fa-solid fa-triangle-exclamation"></i> Ocorrências por Gravidade
+                            </h4>
+                            <div id="urgencyBreakdown" class="space-y-3 text-xs"></div>
+                        </div>
+
+                        <!-- Ocorrências por Distrito -->
+                        <div class="parchment-card p-5 rounded-lg space-y-4">
+                            <h4 class="font-heading text-sm text-brass uppercase font-bold flex items-center gap-2 border-b border-noir-500 pb-2">
+                                <i class="fa-solid fa-map-location-dot"></i> Concentração por Distrito (NYC 1900)
+                            </h4>
+                            <div id="districtBreakdown" class="space-y-3 text-xs"></div>
+                        </div>
+                    </div>
+
+                    <!-- Alertas e Ocorrências Críticas -->
+                    <div class="parchment-card p-5 rounded-lg space-y-4 border-l-4 border-l-crimson">
+                        <h4 class="font-heading text-sm text-crimson uppercase font-bold flex items-center gap-2 border-b border-noir-500 pb-2">
+                            <i class="fa-solid fa-bell-concierge"></i> Casos Críticos Requerendo Atenção Imediata
+                        </h4>
+                        <div id="criticalCasesList" class="space-y-2 text-xs"></div>
+                    </div>
+
+                    <!-- Atividade Recente do Gabinete -->
+                    <div class="parchment-card p-5 rounded-lg space-y-4">
+                        <h4 class="font-heading text-sm text-brass uppercase font-bold flex items-center gap-2 border-b border-noir-500 pb-2">
+                            <i class="fa-solid fa-list-check"></i> Últimos Despachos & Anotações Policiais
+                        </h4>
+                        <div id="recentActivityList" class="space-y-2 text-xs"></div>
+                    </div>
+                </div>
+
+                <!-- ========================================================================= -->
+                <!-- PÁGINA 2 DO GABINETE: GESTÃO DE DENÚNCIAS & DOSSIÊS -->
+                <!-- ========================================================================= -->
+                <div id="admin-subview-reports" class="space-y-6 hidden">
+                    <!-- Filter Controls -->
+                    <div class="parchment-card p-4 rounded-lg flex flex-col md:flex-row gap-4 justify-between items-center">
+                        <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                            <select id="adminFilterStatus" onchange="renderAdminTable()" class="vintage-input p-2 rounded text-xs">
+                                <option value="ALL">Todos os Status</option>
+                                <option value="Pendente">Apenas Pendentes</option>
+                                <option value="Em Investigação">Em Investigação</option>
+                                <option value="Resolvido">Concluídos</option>
+                                <option value="Arquivado">Arquivados</option>
+                            </select>
+                            <select id="adminFilterUrgency" onchange="renderAdminTable()" class="vintage-input p-2 rounded text-xs">
+                                <option value="ALL">Todas as Gravidades</option>
+                                <option value="Crítica">Gravidade: Crítica</option>
+                                <option value="Alta">Gravidade: Alta</option>
+                                <option value="Média">Gravidade: Média</option>
+                                <option value="Baixa">Gravidade: Baixa</option>
+                            </select>
+                            <select id="adminFilterDistrict" onchange="renderAdminTable()" class="vintage-input p-2 rounded text-xs">
+                                <option value="ALL">Todos os Distritos</option>
+                                <option value="Five Points">Five Points</option>
+                                <option value="Bowery Street">Bowery Street</option>
+                                <option value="Lower East Side">Lower East Side</option>
+                                <option value="Docks do East River">Docks do East River</option>
+                                <option value="Wall Street & Financial">Wall Street</option>
+                                <option value="Brooklyn Waterfront">Brooklyn</option>
+                                <option value="Harlem Quarter">Harlem</option>
+                            </select>
+                        </div>
+
+                        <!-- Live Search Input -->
+                        <div class="w-full md:w-64">
+                            <input type="text" id="adminSearchInput" oninput="renderAdminTable()" placeholder="Buscar protocolo, rua, relato..." class="w-full p-2 rounded vintage-input text-xs">
+                        </div>
+                    </div>
+
+                    <!-- Cases Table / Dossier List -->
+                    <div class="parchment-card rounded-lg overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs font-typewriter border-collapse">
+                                <thead>
+                                    <tr class="border-b border-noir-500 bg-noir-900 text-brass font-heading uppercase">
+                                        <th class="p-3">Protocolo</th>
+                                        <th class="p-3">Data / Hora</th>
+                                        <th class="p-3">Categoria</th>
+                                        <th class="p-3">Distrito</th>
+                                        <th class="p-3">Gravidade</th>
+                                        <th class="p-3">Agente Att.</th>
+                                        <th class="p-3">Status</th>
+                                        <th class="p-3 text-right">Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminTableBody" class="divide-y divide-noir-600"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================================================= -->
+                <!-- PÁGINA 3 DO GABINETE: ADMINISTRADORES & AGENTES -->
+                <!-- ========================================================================= -->
+                <div id="admin-subview-admins" class="space-y-6 hidden">
+                    <div class="parchment-card p-5 rounded-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-l-4 border-l-brass">
+                        <div>
+                            <h4 class="font-heading text-base text-brass uppercase font-bold">Corpo Oficial de Detetives & Comissários</h4>
+                            <p class="text-xs text-parchment-400 mt-0.5">Agentes autorizados a acessar os arquivos sigilosos, alterar dossiês e assinar despachos do gabinete.</p>
+                        </div>
+                        <button onclick="openAddDetectiveModal()" class="btn-brass px-4 py-2 rounded text-xs font-bold uppercase flex items-center gap-2">
+                            <i class="fa-solid fa-user-plus"></i> Cadastrar Novo Agente
+                        </button>
+                    </div>
+
+                    <!-- Admin Summary Metrics -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="parchment-card p-4 rounded text-center">
+                            <span class="text-[10px] uppercase text-parchment-400 font-heading block">Total de Agentes</span>
+                            <span id="det-stat-total" class="font-heading text-2xl font-bold text-brass">0</span>
+                        </div>
+                        <div class="parchment-card p-4 rounded text-center">
+                            <span class="text-[10px] uppercase text-parchment-400 font-heading block">Em Atividade no Plantão</span>
+                            <span id="det-stat-active" class="font-heading text-2xl font-bold text-emerald-400">0</span>
+                        </div>
+                        <div class="parchment-card p-4 rounded text-center">
+                            <span class="text-[10px] uppercase text-parchment-400 font-heading block">Detetives Chefes</span>
+                            <span id="det-stat-chiefs" class="font-heading text-2xl font-bold text-amber-300">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Tabela de Administradores -->
+                    <div class="parchment-card rounded-lg overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs font-typewriter border-collapse">
+                                <thead>
+                                    <tr class="border-b border-noir-500 bg-noir-900 text-brass font-heading uppercase">
+                                        <th class="p-3">Distintivo (Badge)</th>
+                                        <th class="p-3">Nome do Oficial</th>
+                                        <th class="p-3">Patente / Cargo</th>
+                                        <th class="p-3">Distrito Atribuído</th>
+                                        <th class="p-3">Status</th>
+                                        <th class="p-3 text-right">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="detectivesTableBody" class="divide-y divide-noir-600"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- MODAL 1: EXAMINAR E EDITAR DOSSIÊ POLICIAL -->
+    <div id="dossierModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="parchment-card max-w-3xl w-full rounded-lg p-6 space-y-5 border-2 border-brass max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-start border-b border-noir-500 pb-3">
+                <div>
+                    <div class="flex items-center gap-3">
+                        <h3 class="font-heading text-xl text-brass font-bold uppercase" id="modalProtocolTitle">DOSSIÊ #NYPD-1900-0000</h3>
+                        <span id="modalStampContainer"></span>
+                    </div>
+                    <p class="text-xs text-parchment-400 mt-1" id="modalSubTitle">Registrado em 12/05/1900 14:30</p>
+                </div>
+                <button onclick="closeDossierModal()" class="text-parchment-400 hover:text-brass text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Detalhes do Caso -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs bg-noir-900 p-4 rounded border border-noir-600">
+                <div>
+                    <span class="text-parchment-400 uppercase font-heading block">Categoria:</span>
+                    <span id="modalCategory" class="text-parchment-100 font-bold"></span>
+                </div>
+                <div>
+                    <span class="text-parchment-400 uppercase font-heading block">Distrito / Ponto de Ref:</span>
+                    <span id="modalDistrict" class="text-brass font-bold"></span>
+                </div>
+                <div>
+                    <span class="text-parchment-400 uppercase font-heading block">Endereço Exato:</span>
+                    <span id="modalAddress" class="text-parchment-200"></span>
+                </div>
+                <div>
+                    <span class="text-parchment-400 uppercase font-heading block">Gravidade Atribuída:</span>
+                    <span id="modalUrgency" class="font-bold"></span>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="font-heading text-xs text-brass uppercase font-bold mb-1">Relato do Informante Anônimo:</h4>
+                <div id="modalDescription" class="p-3 bg-noir-900 rounded border border-noir-600 text-xs text-parchment-200 leading-relaxed font-typewriter whitespace-pre-wrap"></div>
+                
+                <!-- Evidência Container (Modal) -->
+                <div id="modalEvidenceContainer" class="hidden mt-4 p-2 bg-noir-900/50 border border-dashed border-brass/40 inline-block rounded">
+                    <span class="block text-[10px] text-brass uppercase font-heading mb-2"><i class="fa-solid fa-camera-retro"></i> Fotografia / Evidência Anexada</span>
+                    <img id="modalEvidenceImage" src="" alt="Evidência do Caso" class="max-h-60 object-contain rounded border border-noir-600 sepia-[.6] hover:sepia-0 transition-all duration-300">
+                </div>
+            </div>
+
+            <!-- Controles do Gabinete Policial -->
+            <div class="border-t border-brass/30 pt-4 space-y-4">
+                <h4 class="font-heading text-xs text-brass uppercase font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-pen-nib"></i> Atualização de Despacho & Status
+                </h4>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                    <div>
+                        <label class="block uppercase font-heading text-parchment-300 mb-1">Alterar Status *</label>
+                        <select id="modalStatusSelect" class="w-full p-2.5 rounded vintage-input">
+                            <option value="Pendente">Pendente (Novo Registro)</option>
+                            <option value="Em Investigação">Em Investigação</option>
+                            <option value="Resolvido">Concluído / Solucionado</option>
+                            <option value="Arquivado">Arquivado / Sem Provas</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block uppercase font-heading text-parchment-300 mb-1">Alterar Gravidade *</label>
+                        <select id="modalUrgencySelect" class="w-full p-2.5 rounded vintage-input">
+                            <option value="Baixa">Baixa</option>
+                            <option value="Média">Média</option>
+                            <option value="Alta">Alta</option>
+                            <option value="Crítica">Crítica</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block uppercase font-heading text-parchment-300 mb-1">Detetive Encarregado *</label>
+                        <select id="modalDetectiveSelect" class="w-full p-2.5 rounded vintage-input"></select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase font-heading text-parchment-300 mb-1">Nova Anotação de Campo do Detetive</label>
+                    <textarea id="modalNoteText" rows="3" placeholder="Insira novas pistas encontradas, depoimentos colhidos ou ordens de busca executadas..." class="w-full p-2.5 rounded vintage-input text-xs"></textarea>
+                </div>
+
+                <!-- Histórico de Anotações -->
+                <div>
+                    <h5 class="font-heading text-xs text-parchment-300 uppercase mb-2">Diário de Investigação Policial:</h5>
+                    <div id="modalNotesHistory" class="space-y-2 max-h-40 overflow-y-auto pr-1"></div>
+                </div>
+            </div>
+
+            <div class="pt-3 flex justify-between items-center border-t border-noir-500">
+                <button onclick="window.print()" class="px-3 py-2 rounded bg-noir-800 border border-noir-500 text-parchment-300 hover:text-white text-xs font-heading uppercase flex items-center gap-2">
+                    <i class="fa-solid fa-print"></i> Imprimir Dossiê
+                </button>
+                <div class="flex gap-2">
+                    <button type="button" onclick="closeDossierModal()" class="px-4 py-2 rounded bg-noir-700 text-parchment-300 hover:text-white uppercase text-xs font-heading">
+                        Cancelar
+                    </button>
+                    <button onclick="saveDossierChanges()" class="btn-brass px-5 py-2 rounded font-bold uppercase text-xs flex items-center gap-2">
+                        <i class="fa-solid fa-floppy-disk"></i> Salvar Despacho
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- MODAL 2: REGISTRAR NOVO ADMINISTRADOR / DETETIVE -->
+    <div id="detectiveModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="parchment-card max-w-md w-full rounded-lg p-6 space-y-5 border-2 border-brass">
+            <div class="flex justify-between items-center border-b border-noir-500 pb-3">
+                <h3 class="font-heading text-lg text-brass font-bold uppercase flex items-center gap-2">
+                    <i class="fa-solid fa-id-badge"></i> Registrar Novo Oficial / Agente
+                </h3>
+                <button onclick="closeDetectiveModal()" class="text-parchment-400 hover:text-brass text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleSaveDetective(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block uppercase font-heading text-parchment-300 mb-1">Nome Completo do Agente *</label>
+                    <input type="text" id="detName" required placeholder="Ex: Det. Patrick O'Malley" class="w-full p-2.5 rounded vintage-input">
+                </div>
+                <div>
+                    <label class="block uppercase font-heading text-parchment-300 mb-1">Número do Distintivo (Badge ID) *</label>
+                    <input type="text" id="detBadge" required placeholder="Ex: #NYPD-408" class="w-full p-2.5 rounded vintage-input font-mono">
+                </div>
+                <div>
+                    <label class="block uppercase font-heading text-parchment-300 mb-1">Patente / Cargo *</label>
+                    <select id="detRank" required class="w-full p-2.5 rounded vintage-input">
+                        <option value="Inspector Chief">Inspector Chief (Comissário Chefe)</option>
+                        <option value="Captain Investigator">Captain Investigator (Capitão)</option>
+                        <option value="Detective 1st Class">Detective 1st Class (Detetive 1ª Classe)</option>
+                        <option value="Sergeant Analyst">Sergeant Analyst (Sargento Investigador)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block uppercase font-heading text-parchment-300 mb-1">Distrito Atribuído *</label>
+                    <select id="detDistrict" required class="w-full p-2.5 rounded vintage-input">
+                        <option value="Five Points">Five Points Bureau</option>
+                        <option value="Bowery Street">Bowery Street Precinct</option>
+                        <option value="Lower East Side">Lower East Side</option>
+                        <option value="Docks do East River">Docks & Port Division</option>
+                        <option value="Wall Street & Financial">Wall Street Squad</option>
+                        <option value="Brooklyn Waterfront">Brooklyn Waterfront</option>
+                        <option value="Harlem Quarter">Harlem Quarter</option>
+                    </select>
+                </div>
+
+                <div class="pt-3 flex justify-end gap-2 border-t border-noir-600">
+                    <button type="button" onclick="closeDetectiveModal()" class="px-4 py-2 rounded bg-noir-700 text-parchment-300 hover:text-white uppercase font-heading">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-brass px-5 py-2 rounded font-bold uppercase">
+                        Cadastrar Agente
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification Banner -->
+    <div id="toastNotification" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none no-print">
+        <div class="parchment-card px-5 py-3 rounded-lg border-2 border-brass flex items-center gap-3 shadow-2xl">
+            <i id="toastIcon" class="fa-solid fa-circle-info text-brass text-lg"></i>
+            <span id="toastMessage" class="text-xs font-typewriter text-parchment-100"></span>
+        </div>
+    </div>
+
+    <footer class="border-t border-brass/20 bg-noir-900 py-4 px-4 text-center z-10 text-xs text-parchment-400 font-typewriter no-print">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+            <p>© 1900 New York City Police Department - Bureau de Investigações Sigilosas.</p>
+            <p class="text-brass">Protótipo Funcional • Totalmente Anônimo</p>
+        </div>
+    </footer>
+
+</body>
+</html>
