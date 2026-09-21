@@ -770,7 +770,7 @@
                 btn.classList.add('text-brass');
                 btn.classList.remove('text-parchment-300');
             }
-            showToast("Vitrola ligada. Sintonia do Jazz de Nova York (1900) ativa.");
+            showToast("Vitrola ligada. Sintonia ativa.");
         }
 
         function stopJazzEnsemble() {
